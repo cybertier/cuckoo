@@ -165,12 +165,17 @@ class Stix2(Report):
             self.processes.append(process)
             self.all_stix_objects.append(process)
         if classifier["name"].startswith("files_"):
+            name = classifier["prepare"](re.search(regex, line).group(1)).split("/")[-1]
+            dir_str = "/".join(classifier["prepare"](re.search(regex, line).group(1)).split("/")[:-1]) or "/"
+            if not name:
+                name = classifier["prepare"](re.search(regex, line).group(1)).split("/")[-2]
+                dir_str = "/".join(classifier["prepare"](re.search(regex, line).group(1)).split("/")[:-2]) or "/"
             file = File(
                 type="file",
                 id="file--" + str(uuid1()),
-                name=classifier["prepare"](re.search(regex, line).group(1)).split("/")[-1],
+                name=name,
                 custom_properties={
-                    "parent_directory_str": "/".join(classifier["prepare"](re.search(regex, line).group(1)).split("/")[:-1]),
+                    "parent_directory_str": dir_str,
                     "container_id": Stix2.get_containerid(line),
                     "timestamp": line[:24],
                     "full_output": line,
