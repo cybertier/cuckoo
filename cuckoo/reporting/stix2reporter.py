@@ -112,7 +112,7 @@ class Stix2(Report):
                 "name": "processes_created",
                 "key_word": ["execve"],
                 "regexes": [r"execve\(.*?\[(.*?)\]"],
-                "prepare": lambda ob: ob.replace('"', "").replace(",", ""),
+                "prepare": lambda ob: ob.replace('"', "").replace(",", "").replace("'", ""),
             },
             {
                 "name": "domains",
@@ -129,7 +129,10 @@ class Stix2(Report):
 
     @staticmethod
     def find_execution_dir_of_build_script(syscalls):
-        return re.findall(r"execve\(.*?\"-c\", \"(.*?)\/[^\"\/]+\"", syscalls)[0]
+        exec_dir = re.findall(r"execve\(.*?\"-c\", \"(.*?)\/[^\"\/]+\"", syscalls)
+        if exec_dir:
+            return exec_dir[0]
+        return ""
 
     def parse_syscalls_to_stix(self, syscalls):
         for classifier in self.classifiers:
