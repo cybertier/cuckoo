@@ -353,3 +353,7 @@ cafe4cadecb7e06ac5b4c766a8b9334972314e02 analyzer/linux/modules/packages/buildwa
 
 9fdd0d0efb34d0897ad5e2fecab53989e94c2fd7 analyzer/linux/analyzer.py
 c243e176c37369b142a58c229ccb98baf8c2d729 analyzer/linux/modules/packages/buildwatch.py
+
+e87524a44d51be82f9ace912e3bf9eca3f1ac41d analyzer/linux/analyzer.py
+29ccb1b8d38282e4f8c2a096c767f300fe2b58ff analyzer/linux/lib/common/abstracts.py
+8b577acc2f65fe04f5719d4d3f528f2869d2a8ea analyzer/linux/modules/packages/buildwatch.py

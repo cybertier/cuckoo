@@ -224,27 +224,29 @@ class Stix2(Report):
                 self.ipv6.append(ipv6)
                 self.all_stix_objects.append(ipv6)
         if classifier["name"] == "domains":
-            domain_name = classifier["prepare"](re.search(regex, line).group(1))
-            if domain_name:
+            ip = re.search(regex, line).group(1)
+            domain_name = classifier["prepare"](ip)
+            if domain_name != ip:
                 domain = DomainName(
                     type="domain-name",
                     id="domain-name--" + str(uuid1()),
-                    value=classifier["prepare"](re.search(regex, line).group(1)),
-                    resolves_to_refs=[self.get_ip_stix_object_for_domain(line, re.search(regex, line).group(1))],
+                    value=domain_name,
+                    resolves_to_refs=[self.get_ip_stix_object_for_domain(line, ip)],
                     custom_properties={
                         "container_id": Stix2.get_containerid(line),
                         "timestamp": line[:24],
                         "full_output": line,
-                        "resolves_to_str": re.search(regex, line).group(1),
+                        "resolves_to_str": ip,
                     },
                     allow_custom=True,
                 )
                 self.domains.append(domain)
                 self.all_stix_objects.append(domain)
-
+            else: # reverse dns failed, only save ipv4 / ipv6 object
+                self.get_ip_stix_object_for_domain(line, ip)
 
     def get_ip_stix_object_for_domain(self, line, ip):
-        ipv4_regex = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}"
+        ipv4_regex = r"([0-9]{1,3}\.){3}[0-9]{1,3}"
         if re.search(ipv4_regex, line):
             ip = IPv4Address(
                 type="ipv4-addr",
@@ -306,7 +308,7 @@ class Stix2(Report):
         try:
             return socket.gethostbyaddr(ip)[0]
         except BaseException:
-            return ""
+            return ip
 
     def add_stix_groupings(self):
         if self.processes:
@@ -370,7 +372,6 @@ class Stix2(Report):
                     object_refs=self.domains,
                 )
             )
-
 
     def write_report(self, stix_bundle):
         output_file = open(self.analysis_path + "/reports/stix.json", "w")
