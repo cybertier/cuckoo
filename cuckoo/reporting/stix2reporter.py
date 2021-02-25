@@ -193,9 +193,9 @@ class Stix2(Report):
             if classifier["name"] == "files_read":
                 self.files_read.append(file)
         if classifier["name"] == "hosts_connected":
-            ip_regex = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}"
-            
-            if re.search(ip_regex, line):
+            ipv4_regex = r"([0-9]{1,3}\.){3}[0-9]{1,3}"
+
+            if re.search(ipv4_regex, line):
                 ipv4 = IPv4Address(
                     type="ipv4-addr",
                     id="ipv4-addr--" + str(uuid1()),
