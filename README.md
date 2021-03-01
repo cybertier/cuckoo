@@ -12,7 +12,7 @@ The fork also delivers a package called `buildwatch` it takes zips as input. The
 The setup on differs slightly from the original setup.
 On the host you have to install cuckoo with:
 ```shell
-pip install -e https://github.com/axel1200/cuckoo.git
+pip install git+https://github.com/axel1200/cuckoo.git@master
 
 ```
 instead of:
