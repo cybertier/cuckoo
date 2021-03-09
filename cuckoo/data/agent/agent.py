@@ -289,7 +289,7 @@ def do_mkdtemp():
         return json_exception("Error creating temporary directory")
 
     return json_success("Successfully created temporary directory",
-                        dirpath=dirpath)
+                        dirpath=temp_name)
 
 @app.route("/store", methods=["POST"])
 def do_store():
