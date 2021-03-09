@@ -256,14 +256,19 @@ def do_mktemp():
     dirpath = request.form.get("dirpath")
 
     try:
-        fd, filepath = tempfile.mkstemp(suffix=suffix, prefix=prefix, dir=dirpath)
+        if not dirpath:
+            dirpath = tempfile.gettempdir()
+        elif not dirpath.startswith("/"):
+            dirpath = "/" + dirpath
+        temp_name = dirpath + "/" + prefix +next(tempfile._get_candidate_names()).replace("_", "") + suffix
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
+        open(temp_name, 'a').close()
     except:
         return json_exception("Error creating temporary file")
 
-    os.close(fd)
-
     return json_success("Successfully created temporary file",
-                        filepath=filepath)
+                        filepath=temp_name)
 
 @app.route("/mkdtemp", methods=["GET", "POST"])
 def do_mkdtemp():
@@ -272,7 +277,14 @@ def do_mkdtemp():
     dirpath = request.form.get("dirpath")
 
     try:
-        dirpath = tempfile.mkdtemp(suffix=suffix, prefix=prefix, dir=dirpath)
+        if not dirpath:
+            dirpath = tempfile.gettempdir()
+        elif not dirpath.startswith("/"):
+            dirpath = "/" + dirpath
+        temp_name = dirpath + "/" + prefix +next(tempfile._get_candidate_names()).replace("_", "") + suffix
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
+        os.mkdir(temp_name)
     except:
         return json_exception("Error creating temporary directory")
 

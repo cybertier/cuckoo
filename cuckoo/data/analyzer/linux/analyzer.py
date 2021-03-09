@@ -84,7 +84,7 @@ class Analyzer:
         # We update the target according to its category. If it's a file, then
         # we store the path.
         if self.config.category == "file":
-            self.target = os.path.join(tempfile.gettempdir(), self.config.file_name)
+            self.target = os.path.join(tempfile.gettempdir().replace("_", ""), self.config.file_name)
         # If it's a URL, well.. we store the URL.
         else:
             self.target = self.config.target
