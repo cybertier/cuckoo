@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 import socket
@@ -34,6 +35,7 @@ class Stix2(Report):
         self.domains = []
         self.classifiers = []
         self.key_words = []
+        self.whitelist = None
 
     def run(self, results):
         self.init()
@@ -148,7 +150,7 @@ class Stix2(Report):
                 return True
 
     def parse_line_to_stix_object(self, classifier, line, regex):
-        if Stix2.is_on_whitelist(
+        if self.is_on_whitelist(
             classifier["prepare"](re.search(regex, line).group(1))
         ):
             return ""
@@ -277,16 +279,36 @@ class Stix2(Report):
             self.all_stix_objects.append(ip)
         return ip
 
-    @staticmethod
-    def is_on_whitelist(name):
-        whitelist = [
-            "/root/.npm/_cacache",  # npm cache
-            "/root/.npm/_locks",  # npm locks
-            "/root/.npm/anonymous-cli-metrics.json",  # npm metrics
-            "/root/.npm/_logs",  # npm logs
-        ]
+    def is_on_whitelist(self, name):
+        if not self.whitelist:
+            self.whitelist = self.create_whitelist()
 
-        return any([name.startswith(_) for _ in whitelist])
+        return any([Stix2.matches_whitelist_item(item, name) for item in self.whitelist])
+
+    @staticmethod
+    def matches_whitelist_item(item, name):
+        if item.startswith("*") and item.endswith("*"):
+            return item in name
+        if item.startswith("*"):
+            return name.endswith(item)
+        if item.endswith("*"):
+            return name.startswith(item)
+        return name == item
+
+    def create_whitelist(self):
+        whitelist = [
+            "/root/.npm/_cacache*",  # npm cache
+            "/root/.npm/_locks*",  # npm locks
+            "/root/.npm/anonymous-cli-metrics.json",  # npm metrics
+            "/root/.npm/_logs*",  # npm logs
+        ]
+        try:
+            if self.task["custom"]:
+                additional_whitelist = json.loads(self.task["custom"])
+                whitelist.extend(additional_whitelist)
+        except Exception as Argument:
+            logging.exception("failed loading additional whitelist")
+        return whitelist
 
     @staticmethod
     def get_containerid(line):
