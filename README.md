@@ -8,6 +8,9 @@ This cuckoo forks main purpose is to allow the analysis of programms in docker-c
 
 The fork also delivers a package called `buildwatch` it takes zips as input. The zip needs to include a `.buildwatch.sh` . The package unzips the zip and executes the shell script. Call `--package buildwatch` when submitting a file to use it.
 
+### Whitelist
+Use the custom attribute in the task to supply a json list of string items that are whitelisted. Use * at start and end of the item as a wildcard.
+
 ## Difference in setup
 The setup on differs slightly from the original setup.
 On the host you have to install cuckoo with:
