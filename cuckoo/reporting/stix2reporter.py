@@ -287,12 +287,13 @@ class Stix2(Report):
 
     @staticmethod
     def matches_whitelist_item(item, name):
+        without_wildcard = item.replace("*", "")
         if item.startswith("*") and item.endswith("*"):
-            return item in name
+            return without_wildcard in name
         if item.startswith("*"):
-            return name.endswith(item)
+            return name.endswith(without_wildcard)
         if item.endswith("*"):
-            return name.startswith(item)
+            return name.startswith(without_wildcard)
         return name == item
 
     def create_whitelist(self):
