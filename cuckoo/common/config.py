@@ -734,6 +734,9 @@ class Config(object):
             "__star__": ("qemu", "machines"),
         },
         "reporting": {
+            "stap2json": {
+                "enabled": Boolean(False),
+            },
             "stix2reporter": {
                 "enabled": Boolean(True),
             },
