@@ -335,6 +335,7 @@ def tasks_report(task_id, report_format="json"):
         "json": "report.json",
         "html": "report.html",
         "stix": "stix.json",
+        "artifacts": "artifacts.json",
         "programlog": "../logs/program.log"
     }
 
